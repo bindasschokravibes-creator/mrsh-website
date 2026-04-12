@@ -2,100 +2,151 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MRSH Cybersecurity Hub</title>
+<title>MRSH Cybersecurity Arena</title>
 <link rel="stylesheet" href="style.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 </head>
 
 <body>
 
-<nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="tools.html">Tools</a>
-</nav>
+<h1>MRSH Cybersecurity Arena 🏆</h1>
 
-<div class="container">
+<!-- LOGIN -->
+<div id="authBox">
 
-<h1>MRSH Cybersecurity Hub</h1>
-<p>Learn Ethical Hacking & Cybersecurity step by step</p>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
 
-<button onclick="alert('Keep Learning 🔥')">Click Me</button>
+<button onclick="login()">Login</button>
+<button onclick="signup()">Signup</button>
 
-<div class="card">
-    <h2>Topics</h2>
-    <p>Networking | Web Hacking | Tools | Cybersecurity Basics</p>
 </div>
 
-<div class="card">
-    <h2>About MRSH</h2>
-    <p>This platform is created for learning ethical hacking in a simple way.</p>
-</div>
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
 
-<!-- AI CHAT BOX -->
-<div class="card">
-    <h2>AI Chat 🤖</h2>
+<h2>Welcome 😎 <span id="user"></span></h2>
 
-    <div id="chatBox" style="
-        background:#0b1220;
-        padding:15px;
-        height:300px;
-        overflow-y:auto;
-        border-radius:10px;
-        text-align:left;
-        border:1px solid #38bdf8;
-    "></div>
+<p>Your Score: <span id="score">0</span></p>
 
-    <br>
+<button onclick="loadChallenges()">Load Challenges</button>
 
-    <input id="userInput" placeholder="Type your message..."
-    style="padding:10px; width:70%; border-radius:8px; border:none;">
+<div id="challenges"></div>
 
-    <button onclick="sendMessage()">Send</button>
-</div>
+<hr>
+
+<h2>Leaderboard 🏆</h2>
+<button onclick="loadLeaderboard()">Refresh</button>
+<div id="board"></div>
 
 </div>
 
 <script>
-async function sendMessage() {
-    let input = document.getElementById("userInput");
-    let chatBox = document.getElementById("chatBox");
 
-    if (!input.value) return;
+// FIREBASE CONFIG
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT"
+};
 
-    // User message
-    chatBox.innerHTML += "<p><b>You:</b> " + input.value + "</p>";
+firebase.initializeApp(firebaseConfig);
 
-    let userText = input.value;
-    input.value = "";
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-    // AI typing
-    chatBox.innerHTML += "<p><b>AI:</b> thinking...</p>";
+let currentUser = null;
 
-    try {
-        let res = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer YOUR_API_KEY_HERE"
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: userText }]
-            })
+// SIGNUP
+function signup(){
+    auth.createUserWithEmailAndPassword(email.value,password.value);
+}
+
+// LOGIN
+function login(){
+    auth.signInWithEmailAndPassword(email.value,password.value)
+    .then(u=>{
+        currentUser = u.user;
+        authBox.style.display="none";
+        dashboard.style.display="block";
+        user.innerText = currentUser.email;
+        loadScore();
+    });
+}
+
+// LOAD SCORE
+function loadScore(){
+    db.collection("users").doc(currentUser.uid).get()
+    .then(doc=>{
+        if(doc.exists){
+            score.innerText = doc.data().score || 0;
+        } else {
+            db.collection("users").doc(currentUser.uid).set({
+                email: currentUser.email,
+                score: 0
+            });
+        }
+    });
+}
+
+// LOAD CHALLENGES
+function loadChallenges(){
+    challenges.innerHTML = "Loading...";
+
+    db.collection("challenges").get()
+    .then(snapshot=>{
+        challenges.innerHTML = "";
+
+        snapshot.forEach(doc=>{
+            let c = doc.data();
+
+            challenges.innerHTML += `
+            <div style="border:1px solid #fff; margin:10px; padding:10px;">
+                <p>${c.question}</p>
+                <input id="${doc.id}" placeholder="flag">
+                <button onclick="submit('${doc.id}','${c.answer}',${c.points})">Submit</button>
+            </div>`;
+        });
+    });
+}
+
+// SUBMIT ANSWER
+function submit(id,answer,points){
+    let input = document.getElementById(id).value;
+
+    if(input == answer){
+        alert("Correct ✔");
+
+        db.collection("users").doc(currentUser.uid).update({
+            score: firebase.firestore.FieldValue.increment(points)
         });
 
-        let data = await res.json();
-
-        let aiText = data.choices[0].message.content;
-
-        chatBox.innerHTML += "<p><b>AI:</b> " + aiText + "</p>";
-
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-    } catch (err) {
-        chatBox.innerHTML += "<p><b>AI:</b> Error connecting AI 😢</p>";
+        loadScore();
+    } else {
+        alert("Wrong ❌");
     }
 }
+
+// LEADERBOARD
+function loadLeaderboard(){
+    board.innerHTML = "Loading...";
+
+    db.collection("users")
+    .orderBy("score","desc")
+    .get()
+    .then(snapshot=>{
+        board.innerHTML = "";
+
+        snapshot.forEach(doc=>{
+            board.innerHTML += `
+            <p>${doc.data().email} - ${doc.data().score}</p>`;
+        });
+    });
+}
+
 </script>
 
 </body>
