@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MRSH Dashboard</title>
+</head>
+
+<body style="font-family:Arial; text-align:center; background:#0b1220; color:white;">
+
+<h1>MRSH Cybersecurity Dashboard 🔐</h1>
+
+<h2 id="user">Loading...</h2>
+
+<hr>
+
+<h3>Learning Tools</h3>
+
+<button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
+<button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
+<button onclick="alert('Password Tools Coming Soon 🔥')">Password Tools</button>
+
+<hr>
+
+<h3>Notes</h3>
+<textarea style="width:300px; height:120px;" placeholder="Write notes..."></textarea>
+
+<br><br>
+
+<button onclick="logout()">Logout</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCNHjHSYJWJ3WerBJv7tO-jDRb_QY49Dcs",
+  authDomain: "mrsh-website.firebaseapp.com",
+  projectId: "mrsh-website",
+  storageBucket: "mrsh-website.firebasestorage.app",
+  messagingSenderId: "206054036815",
+  appId: "1:206054036815:web:97f0dbff66f977da6d213a"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// SHOW USER
+auth.onAuthStateChanged((user)=>{
+    if(user){
+        document.getElementById("user").innerText = "Welcome " + user.email;
+    } else {
+        window.location.href = "index.html";
+    }
+});
+
+// LOGOUT
+window.logout = async function(){
+    await signOut(auth);
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
