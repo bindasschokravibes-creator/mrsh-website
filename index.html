@@ -2,26 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MRSH Cybersecurity Arena</title>
-<link rel="stylesheet" href="style.css">
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<title>MRSH Cybersecurity Hub</title>
 </head>
 
-<body>
+<body style="font-family: Arial; text-align:center; background:#0b1220; color:white;">
 
-<h1>MRSH Cybersecurity Arena 🏆</h1>
+<h1>MRSH Cybersecurity Hub 🔐</h1>
 
-<!-- LOGIN -->
+<!-- LOGIN BOX -->
 <div id="authBox">
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
+<h2>Login / Signup</h2>
 
-<button onclick="login()">Login</button>
+<input id="email" placeholder="Email" style="padding:10px; width:200px;"><br><br>
+<input id="password" type="password" placeholder="Password" style="padding:10px; width:200px;"><br><br>
+
 <button onclick="signup()">Signup</button>
+<button onclick="login()">Login</button>
+
+<p id="msg"></p>
 
 </div>
 
@@ -30,27 +29,31 @@
 
 <h2>Welcome 😎 <span id="user"></span></h2>
 
-<p>Your Score: <span id="score">0</span></p>
+<textarea id="note" placeholder="Write notes..." style="width:300px; height:100px;"></textarea><br><br>
 
-<button onclick="loadChallenges()">Load Challenges</button>
+<button onclick="saveNote()">Save Note</button>
+<button onclick="loadNote()">Load Note</button>
 
-<div id="challenges"></div>
+<br><br>
 
-<hr>
-
-<h2>Leaderboard 🏆</h2>
-<button onclick="loadLeaderboard()">Refresh</button>
-<div id="board"></div>
+<button onclick="logout()">Logout</button>
 
 </div>
 
-<script>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
-// FIREBASE CONFIG
+<script>
+// 🔥 FIREBASE CONFIG (YAHAN APNA DATA PASTE KARNA)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -58,95 +61,59 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser = null;
-
 // SIGNUP
 function signup(){
-    auth.createUserWithEmailAndPassword(email.value,password.value);
+    auth.createUserWithEmailAndPassword(email.value, password.value)
+    .then(()=>{
+        msg.innerText = "Account created 🔥";
+    })
+    .catch(err=>{
+        msg.innerText = err.message;
+    });
 }
 
 // LOGIN
 function login(){
-    auth.signInWithEmailAndPassword(email.value,password.value)
-    .then(u=>{
-        currentUser = u.user;
-        authBox.style.display="none";
-        dashboard.style.display="block";
-        user.innerText = currentUser.email;
-        loadScore();
+    auth.signInWithEmailAndPassword(email.value, password.value)
+    .then(user=>{
+        document.getElementById("authBox").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("user").innerText = user.user.email;
+    })
+    .catch(err=>{
+        msg.innerText = err.message;
     });
 }
 
-// LOAD SCORE
-function loadScore(){
-    db.collection("users").doc(currentUser.uid).get()
+// SAVE NOTE
+function saveNote(){
+    let user = auth.currentUser;
+
+    db.collection("notes").doc(user.uid).set({
+        note: note.value
+    });
+
+    alert("Saved 💾");
+}
+
+// LOAD NOTE
+function loadNote(){
+    let user = auth.currentUser;
+
+    db.collection("notes").doc(user.uid).get()
     .then(doc=>{
         if(doc.exists){
-            score.innerText = doc.data().score || 0;
-        } else {
-            db.collection("users").doc(currentUser.uid).set({
-                email: currentUser.email,
-                score: 0
-            });
+            note.value = doc.data().note;
         }
     });
 }
 
-// LOAD CHALLENGES
-function loadChallenges(){
-    challenges.innerHTML = "Loading...";
-
-    db.collection("challenges").get()
-    .then(snapshot=>{
-        challenges.innerHTML = "";
-
-        snapshot.forEach(doc=>{
-            let c = doc.data();
-
-            challenges.innerHTML += `
-            <div style="border:1px solid #fff; margin:10px; padding:10px;">
-                <p>${c.question}</p>
-                <input id="${doc.id}" placeholder="flag">
-                <button onclick="submit('${doc.id}','${c.answer}',${c.points})">Submit</button>
-            </div>`;
-        });
+// LOGOUT
+function logout(){
+    auth.signOut().then(()=>{
+        location.reload();
     });
 }
-
-// SUBMIT ANSWER
-function submit(id,answer,points){
-    let input = document.getElementById(id).value;
-
-    if(input == answer){
-        alert("Correct ✔");
-
-        db.collection("users").doc(currentUser.uid).update({
-            score: firebase.firestore.FieldValue.increment(points)
-        });
-
-        loadScore();
-    } else {
-        alert("Wrong ❌");
-    }
-}
-
-// LEADERBOARD
-function loadLeaderboard(){
-    board.innerHTML = "Loading...";
-
-    db.collection("users")
-    .orderBy("score","desc")
-    .get()
-    .then(snapshot=>{
-        board.innerHTML = "";
-
-        snapshot.forEach(doc=>{
-            board.innerHTML += `
-            <p>${doc.data().email} - ${doc.data().score}</p>`;
-        });
-    });
-}
-
 </script>
 
 </body>
