@@ -1,37 +1,67 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
+    background: #0b1220;
+    color: #e5e7eb;
 }
 
+/* Navbar */
 nav {
     background: #111827;
     padding: 15px;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 20px;
+    position: sticky;
+    top: 0;
 }
 
 nav a {
     color: #38bdf8;
     text-decoration: none;
     font-weight: bold;
+    transition: 0.3s;
 }
 
 nav a:hover {
     color: #22c55e;
+    transform: scale(1.1);
 }
 
+/* Main container */
 .container {
-    padding: 20px;
     text-align: center;
+    padding: 60px 20px;
 }
 
+/* Heading */
+h1 {
+    font-size: 40px;
+    color: #38bdf8;
+}
+
+/* Button */
 button {
-    background: #22c55e;
+    background: linear-gradient(45deg, #22c55e, #38bdf8);
     border: none;
-    padding: 10px 20px;
+    padding: 12px 25px;
     color: white;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #38bdf8;
+}
+
+/* Card style (future use) */
+.card {
+    background: #111827;
+    padding: 20px;
+    margin: 15px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(56,189,248,0.2);
 }
