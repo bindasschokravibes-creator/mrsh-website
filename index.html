@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MRSH Cybersecurity Hub</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>MRSH Cybersecurity Hub</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -16,48 +16,60 @@
 
 <div class="container">
 
-    <h1>Welcome to MRSH Cybersecurity Hub</h1>
-    <p>Learn Ethical Hacking & Cybersecurity step by step</p>
+<h1>MRSH Cybersecurity Hub</h1>
+<p>Learn Ethical Hacking & Cybersecurity step by step</p>
 
-    <button onclick="alert('Keep Learning 🔥')">Click Me</button>
+<button onclick="alert('Keep Learning 🔥')">Click Me</button>
 
-    <div class="card">
-        <h2>Topics</h2>
-        <p>Networking | Web Hacking | Tools | Cybersecurity Basics</p>
-    </div>
+<div class="card">
+    <h2>Topics</h2>
+    <p>Networking | Web Hacking | Tools | Cybersecurity Basics</p>
+</div>
 
-    <div class="card">
-        <h2>About MRSH</h2>
-        <p>This platform is created for learning ethical hacking in a simple way.</p>
-    </div>
+<div class="card">
+    <h2>About MRSH</h2>
+    <p>This platform is created for learning ethical hacking in a simple way.</p>
+</div>
 
-    <!-- AI BOX -->
-    <div class="card">
-        <h2>Ask AI 🤖</h2>
+<!-- AI CHAT BOX -->
+<div class="card">
+    <h2>AI Chat 🤖</h2>
 
-        <input type="text" id="userInput" placeholder="Type your question..."
-        style="padding:10px; width:80%; border-radius:8px; border:none;">
+    <div id="chatBox" style="
+        background:#0b1220;
+        padding:15px;
+        height:300px;
+        overflow-y:auto;
+        border-radius:10px;
+        text-align:left;
+        border:1px solid #38bdf8;
+    "></div>
 
-        <br><br>
+    <br>
 
-        <button onclick="askAI()">Ask</button>
+    <input id="userInput" placeholder="Type your message..."
+    style="padding:10px; width:70%; border-radius:8px; border:none;">
 
-        <p id="response" style="margin-top:15px; color:#38bdf8;"></p>
-    </div>
+    <button onclick="sendMessage()">Send</button>
+</div>
 
 </div>
 
 <script>
-async function askAI() {
-    let input = document.getElementById("userInput").value;
-    let responseBox = document.getElementById("response");
+async function sendMessage() {
+    let input = document.getElementById("userInput");
+    let chatBox = document.getElementById("chatBox");
 
-    if (!input) {
-        responseBox.innerText = "Please type something...";
-        return;
-    }
+    if (!input.value) return;
 
-    responseBox.innerText = "Thinking... 🤖";
+    // User message
+    chatBox.innerHTML += "<p><b>You:</b> " + input.value + "</p>";
+
+    let userText = input.value;
+    input.value = "";
+
+    // AI typing
+    chatBox.innerHTML += "<p><b>AI:</b> thinking...</p>";
 
     try {
         let res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -68,16 +80,20 @@ async function askAI() {
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: input }]
+                messages: [{ role: "user", content: userText }]
             })
         });
 
         let data = await res.json();
 
-        responseBox.innerText = data.choices[0].message.content;
+        let aiText = data.choices[0].message.content;
 
-    } catch (error) {
-        responseBox.innerText = "Error connecting AI 😢";
+        chatBox.innerHTML += "<p><b>AI:</b> " + aiText + "</p>";
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+    } catch (err) {
+        chatBox.innerHTML += "<p><b>AI:</b> Error connecting AI 😢</p>";
     }
 }
 </script>
