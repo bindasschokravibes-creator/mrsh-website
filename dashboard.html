@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MRSH Cyber Platform</title>
+<title>MRSH Cyber Platform AI</title>
 
 <style>
 body{
@@ -42,7 +42,6 @@ body{
     padding:20px;
 }
 
-/* CARDS */
 .card{
     background:#111827;
     padding:15px;
@@ -50,7 +49,6 @@ body{
     border-radius:10px;
 }
 
-/* NOTES */
 textarea{
     width:100%;
     height:120px;
@@ -61,29 +59,26 @@ textarea{
     border-radius:8px;
 }
 
-/* AI BOX */
 .chatBox{
     height:200px;
     overflow:auto;
     background:#0f172a;
     padding:10px;
     border-radius:10px;
-    margin-bottom:10px;
 }
 
 input{
-    width:80%;
+    width:75%;
     padding:10px;
     border:none;
-    border-radius:8px;
+    border-radius:6px;
 }
 
-.chatBtn{
+button{
     padding:10px;
-    background:#00ffcc;
     border:none;
+    border-radius:6px;
     cursor:pointer;
-    border-radius:8px;
 }
 </style>
 </head>
@@ -108,52 +103,54 @@ input{
 <!-- MAIN -->
 <div class="main">
 
-    <h1>Cyber Platform Dashboard</h1>
-    <h3 id="user">Loading...</h3>
+<h1>Cyber Platform AI Dashboard</h1>
+<h3 id="user">Loading...</h3>
 
-    <!-- HOME -->
-    <div id="home" class="card">
-        <h2>Welcome 🚀</h2>
-        <p>MRSH Cyber Platform Ready</p>
-    </div>
+<!-- HOME -->
+<div id="home" class="card">
+    <h2>Welcome 🚀</h2>
+    <p>MRSH Cyber AI Platform Ready</p>
+</div>
 
-    <!-- TOOLS -->
-    <div id="tools" class="card" style="display:none;">
-        <h2>Tools Panel</h2>
-        <button onclick="alert('Scanner UI Coming Soon 🔥')">Network Scanner</button>
-        <button onclick="alert('Web Tool Coming Soon 🔥')">Web Scanner</button>
-        <button onclick="alert('Password Tool Coming Soon 🔥')">Password Tools</button>
-    </div>
+<!-- TOOLS -->
+<div id="tools" class="card" style="display:none;">
+    <h2>Tools</h2>
+    <button onclick="alert('Scanner Coming Soon 🔥')">Network Scanner</button>
+    <button onclick="alert('Web Tool Coming Soon 🔥')">Web Scanner</button>
+</div>
 
-    <!-- NOTES -->
-    <div id="notes" class="card" style="display:none;">
-        <h2>Notes</h2>
-        <textarea id="noteBox" placeholder="Write your notes..."></textarea>
-        <br><br>
-        <button onclick="saveNotes()">Save Notes</button>
-    </div>
+<!-- NOTES -->
+<div id="notes" class="card" style="display:none;">
+    <h2>Notes</h2>
+    <textarea id="noteBox"></textarea>
+    <br><br>
+    <button onclick="saveNotes()">Save Notes</button>
+</div>
 
-    <!-- AI CHAT -->
-    <div id="ai" class="card" style="display:none;">
-        <h2>AI Assistant 🤖</h2>
+<!-- AI -->
+<div id="ai" class="card" style="display:none;">
+    <h2>AI Assistant 🤖</h2>
 
-        <div class="chatBox" id="chatBox"></div>
+    <div class="chatBox" id="chatBox"></div>
 
-        <input id="msg" placeholder="Ask something...">
-        <button class="chatBtn" onclick="sendMsg()">Send</button>
-    </div>
+    <br>
 
-    <!-- PROFILE -->
-    <div id="profile" class="card" style="display:none;">
-        <h2>User Profile</h2>
-        <p id="email"></p>
-    </div>
+    <input id="msg" placeholder="Ask cybersecurity question...">
+    <button onclick="sendMsg()">Send</button>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="card" style="display:none;">
+    <h2>User Profile</h2>
+    <p id="email"></p>
+</div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCNHjHSYJWJ3WerBJv7tO-jDRb_QY49Dcs",
@@ -193,9 +190,8 @@ window.showTab = function(tab){
 
 /* NOTES */
 window.saveNotes = function(){
-    let text = document.getElementById("noteBox").value;
-    localStorage.setItem("mrsh_notes", text);
-    alert("Notes Saved ✔");
+    localStorage.setItem("mrsh_notes", document.getElementById("noteBox").value);
+    alert("Saved ✔");
 };
 
 window.onload = function(){
@@ -205,14 +201,32 @@ window.onload = function(){
     }
 };
 
-/* AI CHAT (SIMPLE FAKE RESPONSE) */
-window.sendMsg = function(){
+/* 💀 REAL AI FUNCTION (PASTE YOUR API KEY) */
+window.sendMsg = async function(){
     let msg = document.getElementById("msg").value;
     let box = document.getElementById("chatBox");
 
     box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
 
-    let reply = "I'm MRSH AI 🤖 - I can guide you in cybersecurity basics.";
+    let response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY",
+    {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            contents:[{
+                parts:[{
+                    text:"You are a cybersecurity assistant. Answer simply: " + msg
+                }]
+            }]
+        })
+    });
+
+    let data = await response.json();
+
+    let reply =
+    data.candidates?.[0]?.content?.parts?.[0]?.text
+    || "AI no response";
 
     box.innerHTML += "<div><b>AI:</b> " + reply + "</div>";
 
