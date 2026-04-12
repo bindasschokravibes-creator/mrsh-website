@@ -47,22 +47,38 @@
 
 </div>
 
-<!-- AI SCRIPT -->
 <script>
-function askAI() {
+async function askAI() {
     let input = document.getElementById("userInput").value;
     let responseBox = document.getElementById("response");
 
-    if(input === "") {
+    if (!input) {
         responseBox.innerText = "Please type something...";
         return;
     }
 
     responseBox.innerText = "Thinking... 🤖";
 
-    setTimeout(() => {
-        responseBox.innerText = "AI: You asked -> " + input;
-    }, 1000);
+    try {
+        let res = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer YOUR_API_KEY_HERE"
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{ role: "user", content: input }]
+            })
+        });
+
+        let data = await res.json();
+
+        responseBox.innerText = data.choices[0].message.content;
+
+    } catch (error) {
+        responseBox.innerText = "Error connecting AI 😢";
+    }
 }
 </script>
 
