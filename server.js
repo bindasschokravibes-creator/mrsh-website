@@ -141,4 +141,61 @@ app.post("/ai", async (req, res) => {
 
 app.listen(3000, () => {
     console.log("🔥 AI Server running on http://localhost:3000");
+});const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const fetch = require("node-fetch");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
+
+const API_KEY = "YOUR_GEMINI_KEY";
+
+// Pages
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+    res.sendFile(path.join(__dirname, "dashboard.html"));
+});
+
+// 🔥 AI ROUTE (CONNECTED)
+app.post("/ai", async (req, res) => {
+    try {
+        const msg = req.body.message;
+
+        const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: "You are a cybersecurity expert assistant. Reply clearly and simply: " + msg
+                        }]
+                    }]
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        const reply =
+            data.candidates?.[0]?.content?.parts?.[0]?.text ||
+            "No response from AI";
+
+        res.json({ reply });
+
+    } catch (err) {
+        res.json({ reply: "Server error ❌" });
+    }
+});
+
+app.listen(3000, () => {
+    console.log("🔥 AI CONNECTED SERVER RUNNING http://localhost:3000");
 });
