@@ -3,34 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <title>MRSH Dashboard</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0b1220;
+    color:white;
+    display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#111a2e;
+    padding:20px;
+}
+
+.sidebar h2{
+    color:#00ffcc;
+}
+
+.sidebar button{
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    background:#1f2a44;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    padding:20px;
+}
+
+.card{
+    background:#111a2e;
+    padding:15px;
+    margin:10px;
+    border-radius:10px;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+    background:#1f2a44;
+    color:white;
+    border:none;
+    padding:10px;
+}
+</style>
 </head>
 
-<body style="font-family:Arial; text-align:center; background:#0b1220; color:white;">
+<body>
 
-<h1>MRSH Cybersecurity Dashboard 🔐</h1>
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>MRSH 🔐</h2>
 
-<h2 id="user">Loading...</h2>
+    <button onclick="showTab('tools')">Tools</button>
+    <button onclick="showTab('notes')">Notes</button>
+    <button onclick="showTab('profile')">Profile</button>
 
-<hr>
+    <hr>
 
-<h3>Learning Tools</h3>
+    <button onclick="logout()">Logout</button>
+</div>
 
-<button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
-<button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
-<button onclick="alert('Password Tools Coming Soon 🔥')">Password Tools</button>
+<!-- MAIN -->
+<div class="main">
 
-<hr>
+    <h1>Cybersecurity Dashboard</h1>
+    <h3 id="user">Loading...</h3>
 
-<h3>Notes</h3>
-<textarea style="width:300px; height:120px;" placeholder="Write notes..."></textarea>
+    <!-- TOOLS -->
+    <div id="tools" class="card">
+        <h2>Tools Panel</h2>
+        <button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
+        <button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
+        <button onclick="alert('Password Tools Coming Soon 🔥')">Password Tools</button>
+    </div>
 
-<br><br>
+    <!-- NOTES -->
+    <div id="notes" class="card" style="display:none;">
+        <h2>Notes</h2>
 
-<button onclick="logout()">Logout</button>
+        <textarea id="noteBox" placeholder="Write your notes..."></textarea>
+
+        <br><br>
+
+        <button onclick="saveNotes()">Save Notes</button>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profile" class="card" style="display:none;">
+        <h2>User Info</h2>
+        <p id="email"></p>
+    </div>
+
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCNHjHSYJWJ3WerBJv7tO-jDRb_QY49Dcs",
@@ -44,20 +124,50 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// SHOW USER
+/* USER SESSION CHECK */
 auth.onAuthStateChanged((user)=>{
     if(user){
         document.getElementById("user").innerText = "Welcome " + user.email;
+        document.getElementById("email").innerText = user.email;
+
+        // session save
+        localStorage.setItem("mrsh_logged_in", "true");
     } else {
+        localStorage.removeItem("mrsh_logged_in");
         window.location.href = "index.html";
     }
 });
 
-// LOGOUT
+/* LOGOUT */
 window.logout = async function(){
     await signOut(auth);
+    localStorage.removeItem("mrsh_logged_in");
     window.location.href = "index.html";
-}
+};
+
+/* TAB SWITCH */
+window.showTab = function(tab){
+    document.getElementById("tools").style.display = "none";
+    document.getElementById("notes").style.display = "none";
+    document.getElementById("profile").style.display = "none";
+
+    document.getElementById(tab).style.display = "block";
+};
+
+/* NOTES SAVE (LOCAL STORAGE) */
+window.saveNotes = function(){
+    let text = document.getElementById("noteBox").value;
+    localStorage.setItem("mrsh_notes", text);
+    alert("Notes Saved ✔");
+};
+
+/* LOAD NOTES */
+window.onload = function(){
+    let saved = localStorage.getItem("mrsh_notes");
+    if(saved){
+        document.getElementById("noteBox").value = saved;
+    }
+};
 </script>
 
 </body>
