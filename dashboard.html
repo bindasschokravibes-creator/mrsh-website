@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MRSH Cyber Platform AI</title>
+<title>MRSH Cyber Dashboard</title>
 
 <style>
 body{
@@ -49,6 +49,7 @@ body{
     border-radius:10px;
 }
 
+/* INPUT */
 textarea{
     width:100%;
     height:120px;
@@ -57,14 +58,6 @@ textarea{
     border:none;
     padding:10px;
     border-radius:8px;
-}
-
-.chatBox{
-    height:200px;
-    overflow:auto;
-    background:#0f172a;
-    padding:10px;
-    border-radius:10px;
 }
 
 input{
@@ -79,6 +72,15 @@ button{
     border:none;
     border-radius:6px;
     cursor:pointer;
+}
+
+/* CHAT */
+.chatBox{
+    height:200px;
+    overflow:auto;
+    background:#0f172a;
+    padding:10px;
+    border-radius:10px;
 }
 </style>
 </head>
@@ -103,26 +105,27 @@ button{
 <!-- MAIN -->
 <div class="main">
 
-<h1>Cyber Platform AI Dashboard</h1>
+<h1>Cyber Dashboard</h1>
 <h3 id="user">Loading...</h3>
 
 <!-- HOME -->
 <div id="home" class="card">
     <h2>Welcome 🚀</h2>
-    <p>MRSH Cyber AI Platform Ready</p>
+    <p>MRSH Cybersecurity Platform</p>
 </div>
 
 <!-- TOOLS -->
 <div id="tools" class="card" style="display:none;">
     <h2>Tools</h2>
-    <button onclick="alert('Scanner Coming Soon 🔥')">Network Scanner</button>
-    <button onclick="alert('Web Tool Coming Soon 🔥')">Web Scanner</button>
+    <button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
+    <button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
+    <button onclick="alert('Password Tool Coming Soon 🔥')">Password Tools</button>
 </div>
 
 <!-- NOTES -->
 <div id="notes" class="card" style="display:none;">
     <h2>Notes</h2>
-    <textarea id="noteBox"></textarea>
+    <textarea id="noteBox" placeholder="Write notes..."></textarea>
     <br><br>
     <button onclick="saveNotes()">Save Notes</button>
 </div>
@@ -135,7 +138,7 @@ button{
 
     <br>
 
-    <input id="msg" placeholder="Ask cybersecurity question...">
+    <input id="msg" placeholder="Ask anything...">
     <button onclick="sendMsg()">Send</button>
 </div>
 
@@ -153,18 +156,18 @@ import { getAuth, signOut }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCNHjHSYJWJ3WerBJv7tO-jDRb_QY49Dcs",
+  apiKey: "YOUR_FIREBASE_API_KEY",
   authDomain: "mrsh-website.firebaseapp.com",
   projectId: "mrsh-website",
   storageBucket: "mrsh-website.firebasestorage.app",
   messagingSenderId: "206054036815",
-  appId: "1:206054036815:web:97f0dbff66f977da6d213a"
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* USER */
+/* USER CHECK */
 auth.onAuthStateChanged((user)=>{
     if(user){
         document.getElementById("user").innerText = "Welcome " + user.email;
@@ -180,7 +183,7 @@ window.logout = async function(){
     window.location.href = "index.html";
 };
 
-/* TABS */
+/* TAB SWITCH */
 window.showTab = function(tab){
     ["home","tools","notes","ai","profile"].forEach(id=>{
         document.getElementById(id).style.display="none";
@@ -188,12 +191,13 @@ window.showTab = function(tab){
     document.getElementById(tab).style.display="block";
 };
 
-/* NOTES */
+/* NOTES SAVE */
 window.saveNotes = function(){
     localStorage.setItem("mrsh_notes", document.getElementById("noteBox").value);
-    alert("Saved ✔");
+    alert("Notes Saved ✔");
 };
 
+/* LOAD NOTES */
 window.onload = function(){
     let saved = localStorage.getItem("mrsh_notes");
     if(saved){
@@ -201,36 +205,18 @@ window.onload = function(){
     }
 };
 
-/* 💀 REAL AI FUNCTION (PASTE YOUR API KEY) */
-window.sendMsg = async function(){
+/* 💀 AI CHAT (READY FOR BACKEND OR API) */
+window.sendMsg = function(){
     let msg = document.getElementById("msg").value;
     let box = document.getElementById("chatBox");
 
     box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
 
-    let response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY",
-    {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-            contents:[{
-                parts:[{
-                    text:"You are a cybersecurity assistant. Answer simply: " + msg
-                }]
-            }]
-        })
-    });
-
-    let data = await response.json();
-
-    let reply =
-    data.candidates?.[0]?.content?.parts?.[0]?.text
-    || "AI no response";
+    let reply = "AI mode active 🤖 (connect backend for real AI)";
 
     box.innerHTML += "<div><b>AI:</b> " + reply + "</div>";
 
-    document.getElementById("msg").value="";
+    document.getElementById("msg").value = "";
     box.scrollTop = box.scrollHeight;
 };
 </script>
