@@ -2,46 +2,109 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MRSH Cybersecurity Hub</title>
-<link rel="stylesheet" href="style.css">
+<title>MRSH Dashboard</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0b1220;
+    color:white;
+    display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#111a2e;
+    padding:20px;
+}
+
+.sidebar h2{
+    color:#00ffcc;
+}
+
+.sidebar button{
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    background:#1f2a44;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    padding:20px;
+}
+
+.card{
+    background:#111a2e;
+    padding:15px;
+    margin:10px;
+    border-radius:10px;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+    background:#1f2a44;
+    color:white;
+    border:none;
+    padding:10px;
+}
+</style>
 </head>
 
 <body>
 
-<nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="tools.html">Tools</a>
-</nav>
+<div class="sidebar">
+    <h2>MRSH 🔐</h2>
 
-<div class="container">
-
-    <h1>Welcome to MRSH Cybersecurity Hub</h1>
-    <p>Learn Ethical Hacking & Cybersecurity step by step</p>
-
-    <button onclick="alert('Keep Learning 🔥')">Click Me</button>
+    <button onclick="showTab('tools')">Tools</button>
+    <button onclick="showTab('notes')">Notes</button>
+    <button onclick="showTab('profile')">Profile</button>
 
     <hr>
 
-    <h2>Login / Signup</h2>
+    <button onclick="logout()">Logout</button>
+</div>
 
-    <input id="email" type="email" placeholder="Email"><br><br>
-    <input id="password" type="password" placeholder="Password"><br><br>
+<div class="main">
 
-    <button onclick="signup()">Signup</button>
-    <button onclick="login()">Login</button>
+    <h1>Cybersecurity Dashboard</h1>
+    <h3 id="user">Loading...</h3>
 
-    <p id="msg"></p>
+    <!-- TOOLS -->
+    <div id="tools" class="card">
+        <h2>Tools Panel</h2>
+        <button onclick="alert('Scanner Coming Soon 🔥')">Network Scanner</button>
+        <button onclick="alert('Web Tool Coming Soon 🔥')">Web Scanner</button>
+        <button onclick="alert('Password Tool Coming Soon 🔥')">Password Tools</button>
+    </div>
+
+    <!-- NOTES -->
+    <div id="notes" class="card" style="display:none;">
+        <h2>Notes</h2>
+        <textarea placeholder="Write your notes..."></textarea>
+        <button onclick="alert('Next step: Firebase save 🔥')">Save Notes</button>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profile" class="card" style="display:none;">
+        <h2>User Info</h2>
+        <p id="email"></p>
+    </div>
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCNHjHSYJWJ3WerBJv7tO-jDRb_QY49Dcs",
   authDomain: "mrsh-website.firebaseapp.com",
@@ -54,39 +117,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// SIGNUP
-window.signup = function(){
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+// USER CHECK
+auth.onAuthStateChanged((user)=>{
+    if(user){
+        document.getElementById("user").innerText = "Welcome " + user.email;
+        document.getElementById("email").innerText = user.email;
+    } else {
+        window.location.href = "index.html";
+    }
+});
 
-    createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-        document.getElementById("msg").innerText = "Account Created 🔥";
-    })
-    .catch((error) => {
-        document.getElementById("msg").innerText = error.message;
-    });
+// LOGOUT
+window.logout = async function(){
+    await signOut(auth);
+    window.location.href = "index.html";
 }
 
-// LOGIN + REDIRECT
-window.login = function(){
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+// TAB SWITCH
+window.showTab = function(tab){
+    document.getElementById("tools").style.display = "none";
+    document.getElementById("notes").style.display = "none";
+    document.getElementById("profile").style.display = "none";
 
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        document.getElementById("msg").innerText =
-        "Login Success ✔ " + userCredential.user.email;
-
-        // 🔥 REDIRECT TO DASHBOARD
-        setTimeout(() => {
-            window.location.href = "dashboard.html";
-        }, 1000);
-
-    })
-    .catch((error) => {
-        document.getElementById("msg").innerText = error.message;
-    });
+    document.getElementById(tab).style.display = "block";
 }
 </script>
 
