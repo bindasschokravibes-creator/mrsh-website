@@ -1,229 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>MRSH Cyber Dashboard</title>
+    <title>MRSH Cyber Dashboard</title>
 
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#0a0f1c;
-    color:white;
-    display:flex;
-}
+    <style>
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 20px;
+        }
 
-/* SIDEBAR */
-.sidebar{
-    width:240px;
-    height:100vh;
-    background:#0f172a;
-    padding:20px;
-}
+        h2 {
+            color: #00ff00;
+        }
 
-.sidebar h2{
-    color:#00ffcc;
-}
+        #chatBox {
+            height: 250px;
+            overflow-y: auto;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
 
-.sidebar button{
-    width:100%;
-    margin-top:10px;
-    padding:10px;
-    background:#1e293b;
-    color:white;
-    border:none;
-    cursor:pointer;
-    border-radius:6px;
-}
+        input, textarea {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            background: black;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
 
-/* MAIN */
-.main{
-    flex:1;
-    padding:20px;
-}
+        button {
+            background: #00ff00;
+            color: black;
+            padding: 8px;
+            border: none;
+            cursor: pointer;
+            margin-top: 5px;
+        }
 
-.card{
-    background:#111827;
-    padding:15px;
-    margin:10px;
-    border-radius:10px;
-}
-
-/* INPUT */
-textarea{
-    width:100%;
-    height:120px;
-    background:#1f2937;
-    color:white;
-    border:none;
-    padding:10px;
-    border-radius:8px;
-}
-
-input{
-    width:75%;
-    padding:10px;
-    border:none;
-    border-radius:6px;
-}
-
-button{
-    padding:10px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-/* CHAT */
-.chatBox{
-    height:200px;
-    overflow:auto;
-    background:#0f172a;
-    padding:10px;
-    border-radius:10px;
-}
-</style>
+        hr {
+            border: 1px solid #00ff00;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <h2>MRSH 🔐</h2>
+<h2>🔐 MRSH Cyber Dashboard</h2>
 
-    <button onclick="showTab('home')">Home</button>
-    <button onclick="showTab('tools')">Tools</button>
-    <button onclick="showTab('notes')">Notes</button>
-    <button onclick="showTab('ai')">AI Assistant</button>
-    <button onclick="showTab('profile')">Profile</button>
+<p>Welcome to your AI Cyber Assistant</p>
 
-    <hr>
+<!-- AI CHAT -->
+<div id="chatBox"></div>
 
-    <button onclick="logout()">Logout</button>
-</div>
+<input id="msg" placeholder="Ask AI..." />
+<button onclick="sendMsg()">Send</button>
 
-<!-- MAIN -->
-<div class="main">
+<hr>
 
-<h1>Cyber Dashboard</h1>
-<h3 id="user">Loading...</h3>
+<!-- FEEDBACK -->
+<h3>💬 Feedback System</h3>
 
-<!-- HOME -->
-<div id="home" class="card">
-    <h2>Welcome 🚀</h2>
-    <p>MRSH Cybersecurity Platform</p>
-</div>
+<textarea id="feedback" placeholder="Write your feedback..."></textarea>
+<button onclick="sendFeedback()">Submit Feedback</button>
 
-<!-- TOOLS -->
-<div id="tools" class="card" style="display:none;">
-    <h2>Tools</h2>
-    <button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
-    <button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
-    <button onclick="alert('Password Tool Coming Soon 🔥')">Password Tools</button>
-</div>
+<script>
 
-<!-- NOTES -->
-<div id="notes" class="card" style="display:none;">
-    <h2>Notes</h2>
-    <textarea id="noteBox" placeholder="Write notes..."></textarea>
-    <br><br>
-    <button onclick="saveNotes()">Save Notes</button>
-</div>
-
-<!-- AI -->
-<div id="ai" class="card" style="display:none;">
-    <h2>AI Assistant 🤖</h2>
-
-    <div class="chatBox" id="chatBox"></div>
-
-    <br>
-
-    <input id="msg" placeholder="Ask anything...">
-    <button onclick="sendMsg()">Send</button>
-</div>
-
-<!-- PROFILE -->
-<div id="profile" class="card" style="display:none;">
-    <h2>User Profile</h2>
-    <p id="email"></p>
-</div>
-
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signOut }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "mrsh-website.firebaseapp.com",
-  projectId: "mrsh-website",
-  storageBucket: "mrsh-website.firebasestorage.app",
-  messagingSenderId: "206054036815",
-  appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-/* USER CHECK */
-auth.onAuthStateChanged((user)=>{
-    if(user){
-        document.getElementById("user").innerText = "Welcome " + user.email;
-        document.getElementById("email").innerText = user.email;
-    } else {
-        window.location.href = "index.html";
-    }
-});
-
-/* LOGOUT */
-window.logout = async function(){
-    await signOut(auth);
-    window.location.href = "index.html";
-};
-
-/* TAB SWITCH */
-window.showTab = function(tab){
-    ["home","tools","notes","ai","profile"].forEach(id=>{
-        document.getElementById(id).style.display="none";
-    });
-    document.getElementById(tab).style.display="block";
-};
-
-/* NOTES SAVE */
-window.saveNotes = function(){
-    localStorage.setItem("mrsh_notes", document.getElementById("noteBox").value);
-    alert("Notes Saved ✔");
-};
-
-/* LOAD NOTES */
-window.onload = function(){
-    let saved = localStorage.getItem("mrsh_notes");
-    if(saved){
-        document.getElementById("noteBox").value = saved;
-    }
-};
-
-/* 💀 AI CHAT (READY FOR BACKEND OR API) */
-window.sendMsg = function(){
+// 💀 AI CHAT
+async function sendMsg() {
     let msg = document.getElementById("msg").value;
     let box = document.getElementById("chatBox");
+
+    if (!msg) return;
 
     box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
-
-    let reply = "AI mode active 🤖 (connect backend for real AI)";
-
-    box.innerHTML += "<div><b>AI:</b> " + reply + "</div>";
-
-    document.getElementById("msg").value = "";
-    box.scrollTop = box.scrollHeight;
-};
-</script>async function sendMsg(){
-    let msg = document.getElementById("msg").value;
-    let box = document.getElementById("chatBox");
-
-    box.innerHTML += `<div><b>You:</b> ${msg}</div>`;
 
     let res = await fetch("/ai", {
         method: "POST",
@@ -233,11 +87,30 @@ window.sendMsg = function(){
 
     let data = await res.json();
 
-    box.innerHTML += `<div><b>AI:</b> ${data.reply}</div>`;
+    box.innerHTML += "<div><b>AI:</b> " + data.reply + "</div>";
 
     document.getElementById("msg").value = "";
     box.scrollTop = box.scrollHeight;
 }
+
+// 💬 FEEDBACK
+async function sendFeedback() {
+    let fb = document.getElementById("feedback").value;
+
+    if (!fb) return;
+
+    await fetch("/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedback: fb })
+    });
+
+    alert("Thanks for feedback ✔");
+
+    document.getElementById("feedback").value = "";
+}
+
+</script>
 
 </body>
 </html>
