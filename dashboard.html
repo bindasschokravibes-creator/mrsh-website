@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MRSH Dashboard</title>
+<title>MRSH Cyber Platform</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial;
-    background:#0b1220;
+    background:#0a0f1c;
     color:white;
     display:flex;
 }
 
 /* SIDEBAR */
 .sidebar{
-    width:220px;
+    width:240px;
     height:100vh;
-    background:#111a2e;
+    background:#0f172a;
     padding:20px;
 }
 
@@ -29,10 +29,11 @@ body{
     width:100%;
     margin-top:10px;
     padding:10px;
-    background:#1f2a44;
+    background:#1e293b;
     color:white;
     border:none;
     cursor:pointer;
+    border-radius:6px;
 }
 
 /* MAIN */
@@ -41,20 +42,48 @@ body{
     padding:20px;
 }
 
+/* CARDS */
 .card{
-    background:#111a2e;
+    background:#111827;
     padding:15px;
     margin:10px;
     border-radius:10px;
 }
 
+/* NOTES */
 textarea{
     width:100%;
     height:120px;
-    background:#1f2a44;
+    background:#1f2937;
     color:white;
     border:none;
     padding:10px;
+    border-radius:8px;
+}
+
+/* AI BOX */
+.chatBox{
+    height:200px;
+    overflow:auto;
+    background:#0f172a;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+input{
+    width:80%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+}
+
+.chatBtn{
+    padding:10px;
+    background:#00ffcc;
+    border:none;
+    cursor:pointer;
+    border-radius:8px;
 }
 </style>
 </head>
@@ -65,8 +94,10 @@ textarea{
 <div class="sidebar">
     <h2>MRSH 🔐</h2>
 
+    <button onclick="showTab('home')">Home</button>
     <button onclick="showTab('tools')">Tools</button>
     <button onclick="showTab('notes')">Notes</button>
+    <button onclick="showTab('ai')">AI Assistant</button>
     <button onclick="showTab('profile')">Profile</button>
 
     <hr>
@@ -77,31 +108,44 @@ textarea{
 <!-- MAIN -->
 <div class="main">
 
-    <h1>Cybersecurity Dashboard</h1>
+    <h1>Cyber Platform Dashboard</h1>
     <h3 id="user">Loading...</h3>
 
+    <!-- HOME -->
+    <div id="home" class="card">
+        <h2>Welcome 🚀</h2>
+        <p>MRSH Cyber Platform Ready</p>
+    </div>
+
     <!-- TOOLS -->
-    <div id="tools" class="card">
+    <div id="tools" class="card" style="display:none;">
         <h2>Tools Panel</h2>
-        <button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
-        <button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
-        <button onclick="alert('Password Tools Coming Soon 🔥')">Password Tools</button>
+        <button onclick="alert('Scanner UI Coming Soon 🔥')">Network Scanner</button>
+        <button onclick="alert('Web Tool Coming Soon 🔥')">Web Scanner</button>
+        <button onclick="alert('Password Tool Coming Soon 🔥')">Password Tools</button>
     </div>
 
     <!-- NOTES -->
     <div id="notes" class="card" style="display:none;">
         <h2>Notes</h2>
-
         <textarea id="noteBox" placeholder="Write your notes..."></textarea>
-
         <br><br>
-
         <button onclick="saveNotes()">Save Notes</button>
+    </div>
+
+    <!-- AI CHAT -->
+    <div id="ai" class="card" style="display:none;">
+        <h2>AI Assistant 🤖</h2>
+
+        <div class="chatBox" id="chatBox"></div>
+
+        <input id="msg" placeholder="Ask something...">
+        <button class="chatBtn" onclick="sendMsg()">Send</button>
     </div>
 
     <!-- PROFILE -->
     <div id="profile" class="card" style="display:none;">
-        <h2>User Info</h2>
+        <h2>User Profile</h2>
         <p id="email"></p>
     </div>
 
@@ -109,8 +153,7 @@ textarea{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signOut }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCNHjHSYJWJ3WerBJv7tO-jDRb_QY49Dcs",
@@ -124,16 +167,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* USER SESSION CHECK */
+/* USER */
 auth.onAuthStateChanged((user)=>{
     if(user){
         document.getElementById("user").innerText = "Welcome " + user.email;
         document.getElementById("email").innerText = user.email;
-
-        // session save
-        localStorage.setItem("mrsh_logged_in", "true");
     } else {
-        localStorage.removeItem("mrsh_logged_in");
         window.location.href = "index.html";
     }
 });
@@ -141,32 +180,44 @@ auth.onAuthStateChanged((user)=>{
 /* LOGOUT */
 window.logout = async function(){
     await signOut(auth);
-    localStorage.removeItem("mrsh_logged_in");
     window.location.href = "index.html";
 };
 
-/* TAB SWITCH */
+/* TABS */
 window.showTab = function(tab){
-    document.getElementById("tools").style.display = "none";
-    document.getElementById("notes").style.display = "none";
-    document.getElementById("profile").style.display = "none";
-
-    document.getElementById(tab).style.display = "block";
+    ["home","tools","notes","ai","profile"].forEach(id=>{
+        document.getElementById(id).style.display="none";
+    });
+    document.getElementById(tab).style.display="block";
 };
 
-/* NOTES SAVE (LOCAL STORAGE) */
+/* NOTES */
 window.saveNotes = function(){
     let text = document.getElementById("noteBox").value;
     localStorage.setItem("mrsh_notes", text);
     alert("Notes Saved ✔");
 };
 
-/* LOAD NOTES */
 window.onload = function(){
     let saved = localStorage.getItem("mrsh_notes");
     if(saved){
         document.getElementById("noteBox").value = saved;
     }
+};
+
+/* AI CHAT (SIMPLE FAKE RESPONSE) */
+window.sendMsg = function(){
+    let msg = document.getElementById("msg").value;
+    let box = document.getElementById("chatBox");
+
+    box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
+
+    let reply = "I'm MRSH AI 🤖 - I can guide you in cybersecurity basics.";
+
+    box.innerHTML += "<div><b>AI:</b> " + reply + "</div>";
+
+    document.getElementById("msg").value="";
+    box.scrollTop = box.scrollHeight;
 };
 </script>
 
