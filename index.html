@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MRSH Cybersecurity Hub</title>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
+
+        .navbar {
+            background-color:#020617;
+            padding:15px;
+        }
+
+        .navbar a {
+            color:white;
+            margin-right:20px;
+            text-decoration:none;
+        }
+
+        h1 {
+            color: #38bdf8;
+        }
+
+        button {
+            background-color: #22c55e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .chat-box {
+            margin-top: 30px;
+        }
+
+        input {
+            padding:10px;
+            width:200px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="tools.html">Tools</a>
+</div>
+
+<h1>Welcome to MRSH Cybersecurity Hub</h1>
+<p>This is my first website.</p>
+
+<h2>Topics</h2>
+<ul>
+    <li>Networking</li>
+    <li>Web Hacking</li>
+    <li>Tools</li>
+</ul>
+
+<button onclick="showMessage()">Click Me</button>
+
+<!-- AI Chat -->
+<div class="chat-box">
+    <h2>Ask AI 🤖</h2>
+    <input type="text" id="userInput" placeholder="Type your question...">
+    <br><br>
+    <button onclick="askAI()">Ask</button>
+    <p id="response"></p>
+</div>
+
+<script>
+function showMessage() {
+    alert("Welcome to MRSH Cybersecurity Hub 😎");
+}
+
+function askAI() {
+    let input = document.getElementById("userInput").value;
+    let reply = "AI: I am learning... You asked: " + input;
+    document.getElementById("response").innerText = reply;
+}
+</script>
+
+</body>
+</html>
