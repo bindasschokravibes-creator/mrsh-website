@@ -1,52 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>MRSH Cybersecurity Hub</title>
 </head>
 
-<body style="font-family: Arial; text-align:center; background:#0b1220; color:white;">
+<body style="text-align:center; font-family:Arial; background:#0b1220; color:white;">
 
-<h1>MRSH Cybersecurity Hub 🔐</h1>
+<h1>MRSH Cybersecurity Arena 🏆</h1>
 
-<!-- LOGIN BOX -->
-<div id="authBox">
-
-<h2>Login / Signup</h2>
-
-<input id="email" placeholder="Email" style="padding:10px; width:200px;"><br><br>
-<input id="password" type="password" placeholder="Password" style="padding:10px; width:200px;"><br><br>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
 
 <button onclick="signup()">Signup</button>
 <button onclick="login()">Login</button>
 
 <p id="msg"></p>
 
-</div>
+<!-- FIREBASE MODERN SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none;">
+import { getFirestore, doc, setDoc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<h2>Welcome 😎 <span id="user"></span></h2>
-
-<textarea id="note" placeholder="Write notes..." style="width:300px; height:100px;"></textarea><br><br>
-
-<button onclick="saveNote()">Save Note</button>
-<button onclick="loadNote()">Load Note</button>
-
-<br><br>
-
-<button onclick="logout()">Logout</button>
-
-</div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-
-<script>
-// 🔥 FIREBASE CONFIG (YAHAN APNA DATA PASTE KARNA)
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -56,63 +35,28 @@ const firebaseConfig = {
   appId: "XXXX"
 };
 
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 // SIGNUP
-function signup(){
-    auth.createUserWithEmailAndPassword(email.value, password.value)
-    .then(()=>{
-        msg.innerText = "Account created 🔥";
-    })
-    .catch(err=>{
+window.signup = async function(){
+    try {
+        await createUserWithEmailAndPassword(auth, email.value, password.value);
+        msg.innerText = "Account Created 🔥";
+    } catch(err){
         msg.innerText = err.message;
-    });
+    }
 }
 
 // LOGIN
-function login(){
-    auth.signInWithEmailAndPassword(email.value, password.value)
-    .then(user=>{
-        document.getElementById("authBox").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        document.getElementById("user").innerText = user.user.email;
-    })
-    .catch(err=>{
+window.login = async function(){
+    try {
+        const user = await signInWithEmailAndPassword(auth, email.value, password.value);
+        msg.innerText = "Login Success ✔ " + user.user.email;
+    } catch(err){
         msg.innerText = err.message;
-    });
-}
-
-// SAVE NOTE
-function saveNote(){
-    let user = auth.currentUser;
-
-    db.collection("notes").doc(user.uid).set({
-        note: note.value
-    });
-
-    alert("Saved 💾");
-}
-
-// LOAD NOTE
-function loadNote(){
-    let user = auth.currentUser;
-
-    db.collection("notes").doc(user.uid).get()
-    .then(doc=>{
-        if(doc.exists){
-            note.value = doc.data().note;
-        }
-    });
-}
-
-// LOGOUT
-function logout(){
-    auth.signOut().then(()=>{
-        location.reload();
-    });
+    }
 }
 </script>
 
