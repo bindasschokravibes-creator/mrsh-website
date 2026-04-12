@@ -61,6 +61,7 @@ textarea{
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
     <h2>MRSH 🔐</h2>
 
@@ -73,6 +74,7 @@ textarea{
     <button onclick="logout()">Logout</button>
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
     <h1>Cybersecurity Dashboard</h1>
@@ -81,16 +83,20 @@ textarea{
     <!-- TOOLS -->
     <div id="tools" class="card">
         <h2>Tools Panel</h2>
-        <button onclick="alert('Scanner Coming Soon 🔥')">Network Scanner</button>
-        <button onclick="alert('Web Tool Coming Soon 🔥')">Web Scanner</button>
-        <button onclick="alert('Password Tool Coming Soon 🔥')">Password Tools</button>
+        <button onclick="alert('Network Scanner Coming Soon 🔥')">Network Scanner</button>
+        <button onclick="alert('Web Scanner Coming Soon 🔥')">Web Scanner</button>
+        <button onclick="alert('Password Tools Coming Soon 🔥')">Password Tools</button>
     </div>
 
     <!-- NOTES -->
     <div id="notes" class="card" style="display:none;">
         <h2>Notes</h2>
-        <textarea placeholder="Write your notes..."></textarea>
-        <button onclick="alert('Next step: Firebase save 🔥')">Save Notes</button>
+
+        <textarea id="noteBox" placeholder="Write your notes..."></textarea>
+
+        <br><br>
+
+        <button onclick="saveNotes()">Save Notes</button>
     </div>
 
     <!-- PROFILE -->
@@ -140,6 +146,21 @@ window.showTab = function(tab){
     document.getElementById("profile").style.display = "none";
 
     document.getElementById(tab).style.display = "block";
+}
+
+// 💀 LOCAL STORAGE NOTES SYSTEM
+window.saveNotes = function(){
+    let text = document.getElementById("noteBox").value;
+    localStorage.setItem("mrsh_notes", text);
+    alert("Notes Saved ✔");
+}
+
+// LOAD NOTES
+window.onload = function(){
+    let saved = localStorage.getItem("mrsh_notes");
+    if(saved){
+        document.getElementById("noteBox").value = saved;
+    }
 }
 </script>
 
