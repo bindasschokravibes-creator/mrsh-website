@@ -7,21 +7,23 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
 
-const API_KEY = "YOUR_GEMINI_KEY"; // यहाँ अपनी key डालना
+// 🔥 STATIC FILES FIX (IMPORTANT)
+app.use(express.static(path.join(__dirname)));
 
-// Home page
+const API_KEY = "YOUR_GEMINI_KEY";
+
+// 👉 HOME ROUTE FIX
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Dashboard page
+// 👉 DASHBOARD ROUTE
 app.get("/dashboard", (req, res) => {
     res.sendFile(path.join(__dirname, "dashboard.html"));
 });
 
-// 🔥 AI Route
+// 👉 AI ROUTE
 app.post("/ai", async (req, res) => {
     try {
         const msg = req.body.message;
@@ -34,7 +36,7 @@ app.post("/ai", async (req, res) => {
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: "You are a helpful cybersecurity assistant. Reply simply: " + msg
+                            text: "You are a cybersecurity assistant: " + msg
                         }]
                     }]
                 })
@@ -42,29 +44,13 @@ app.post("/ai", async (req, res) => {
         );
 
         const data = await response.json();
-
-        const reply =
-            data.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "No response from AI";
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
 
         res.json({ reply });
 
-    } catch (err) {
-        res.json({ reply: "Server error ❌" });
+    } catch {
+        res.json({ reply: "Server error" });
     }
-});
-
-// 💬 Feedback system (simple)
-let feedbacks = [];
-
-app.post("/feedback", (req, res) => {
-    const fb = req.body.feedback;
-    feedbacks.push(fb);
-    res.json({ status: "saved" });
-});
-
-app.get("/feedback", (req, res) => {
-    res.json(feedbacks);
 });
 
 app.listen(3000, () => {
