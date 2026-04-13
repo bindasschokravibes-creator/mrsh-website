@@ -1,26 +1,34 @@
+console.log("🔥 MRSH SERVER STARTED");
+
 const express = require("express");
 const path = require("path");
 
 const app = express();
 
-// 🔥 static files (HTML, CSS)
-app.use(express.static(__dirname));
+// ✅ static files serve (important)
+app.use(express.static(path.join(__dirname)));
 
-// 🏠 Home page (index.html)
+// ✅ home page
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 📊 Dashboard
+// ✅ dashboard
 app.get("/dashboard", (req, res) => {
     res.sendFile(path.join(__dirname, "dashboard.html"));
 });
 
-// 🧪 Test
+// ✅ test route
 app.get("/test", (req, res) => {
-    res.send("EXPRESS WORKING 💀🔥");
+    res.send("SERVER OK 💀🔥");
 });
 
+// ❌ unknown route fix
+app.use((req, res) => {
+    res.send("404 NOT FOUND ❌");
+});
+
+// ✅ start server
 app.listen(4000, () => {
-    console.log("🔥 MRSH SERVER http://localhost:4000");
+    console.log("🚀 SERVER RUNNING: http://localhost:4000");
 });
