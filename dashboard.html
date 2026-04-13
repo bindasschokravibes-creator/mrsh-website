@@ -2,28 +2,13 @@
 <html>
 <head>
     <title>Dashboard</title>
-    <style>
-        body {
-            background:black;
-            color:#00ff00;
-            font-family:monospace;
-            text-align:center;
-        }
-        input {
-            padding:10px;
-        }
-        button {
-            padding:10px;
-            margin:5px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>💀 Cyber Dashboard 💀</h1>
 
-<h2>Ask AI</h2>
-<input id="msg" placeholder="Type here...">
+<input id="msg" placeholder="Ask something...">
 <button onclick="sendMsg()">Send</button>
 
 <div id="chatBox"></div>
@@ -34,7 +19,6 @@ async function sendMsg(){
     let box = document.getElementById("chatBox");
 
     box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
-
     box.innerHTML += "<div><b>AI:</b> Coming soon...</div>";
 }
 </script>
