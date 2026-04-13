@@ -1,27 +1,36 @@
 const express = require("express");
-const path = require("path");
+const cors = require("cors");
+const fetch = require("node-fetch");
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-// static files
-app.use(express.static(__dirname));
+const API_KEY = "YOUR_GEMINI_KEY";
 
-// home
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+app.post("/ai", async (req, res) => {
+    const msg = req.body.message;
+
+    const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: "You are a cybersecurity assistant: " + msg
+                    }]
+                }]
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    res.json({
+        reply: data.candidates?.[0]?.content?.parts?.[0]?.text || "No response"
+    });
 });
 
-// dashboard
-app.get("/dashboard", (req, res) => {
-    res.sendFile(path.join(__dirname, "dashboard.html"));
-});
-
-// test
-app.get("/test", (req, res) => {
-    res.send("EXPRESS WORKING 💀🔥");
-});
-
-// port change (IMPORTANT)
-app.listen(8080, () => {
-    console.log("🔥 EXPRESS SERVER http://localhost:8080");
-});
+app.listen(3000, () => console.log("🔥 AI SERVER http://localhost:3000"));
