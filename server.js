@@ -3,17 +3,14 @@ const path = require("path");
 
 const app = express();
 
-// 🔥 IMPORTANT: static files serve
-app.use(express.static(__dirname));
-
-// 👉 direct index fix
+// 🔥 FORCE index.html serve
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 👉 dashboard route
-app.get("/dashboard", (req, res) => {
-    res.sendFile(__dirname + "/dashboard.html");
+// 🔥 test route
+app.get("/test", (req, res) => {
+    res.send("SERVER WORKING 🔥");
 });
 
 app.listen(3000, () => {
