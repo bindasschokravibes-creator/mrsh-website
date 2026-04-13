@@ -1,115 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MRSH Cyber Dashboard</title>
-
+    <title>Dashboard</title>
     <style>
         body {
-            background: black;
-            color: #00ff00;
-            font-family: monospace;
-            padding: 20px;
+            background:black;
+            color:#00ff00;
+            font-family:monospace;
+            text-align:center;
         }
-
-        h2 {
-            color: #00ff00;
+        input {
+            padding:10px;
         }
-
-        #chatBox {
-            height: 250px;
-            overflow-y: auto;
-            border: 1px solid #00ff00;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        input, textarea {
-            width: 100%;
-            margin: 5px 0;
-            padding: 8px;
-            background: black;
-            color: #00ff00;
-            border: 1px solid #00ff00;
-        }
-
         button {
-            background: #00ff00;
-            color: black;
-            padding: 8px;
-            border: none;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-
-        hr {
-            border: 1px solid #00ff00;
-            margin: 20px 0;
+            padding:10px;
+            margin:5px;
         }
     </style>
 </head>
-
 <body>
 
-<h2>🔐 MRSH Cyber Dashboard</h2>
+<h1>💀 Cyber Dashboard 💀</h1>
 
-<p>Welcome to your AI Cyber Assistant</p>
-
-<!-- AI CHAT -->
-<div id="chatBox"></div>
-
-<input id="msg" placeholder="Ask AI..." />
+<h2>Ask AI</h2>
+<input id="msg" placeholder="Type here...">
 <button onclick="sendMsg()">Send</button>
 
-<hr>
-
-<!-- FEEDBACK -->
-<h3>💬 Feedback System</h3>
-
-<textarea id="feedback" placeholder="Write your feedback..."></textarea>
-<button onclick="sendFeedback()">Submit Feedback</button>
+<div id="chatBox"></div>
 
 <script>
-
-// 💀 AI CHAT
-async function sendMsg() {
+async function sendMsg(){
     let msg = document.getElementById("msg").value;
     let box = document.getElementById("chatBox");
 
-    if (!msg) return;
-
     box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
 
-    let res = await fetch("/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg })
-    });
-
-    let data = await res.json();
-
-    box.innerHTML += "<div><b>AI:</b> " + data.reply + "</div>";
-
-    document.getElementById("msg").value = "";
-    box.scrollTop = box.scrollHeight;
+    box.innerHTML += "<div><b>AI:</b> Coming soon...</div>";
 }
-
-// 💬 FEEDBACK
-async function sendFeedback() {
-    let fb = document.getElementById("feedback").value;
-
-    if (!fb) return;
-
-    await fetch("/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ feedback: fb })
-    });
-
-    alert("Thanks for feedback ✔");
-
-    document.getElementById("feedback").value = "";
-}
-
 </script>
 
 </body>
