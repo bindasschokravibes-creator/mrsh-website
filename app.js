@@ -3,20 +3,20 @@ const path = require("path");
 
 const app = express();
 
-// static files
+// 🔥 static files (HTML, CSS)
 app.use(express.static(__dirname));
 
-// home page
+// 🏠 Home page (index.html)
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// dashboard
+// 📊 Dashboard
 app.get("/dashboard", (req, res) => {
     res.sendFile(path.join(__dirname, "dashboard.html"));
 });
 
-// test
+// 🧪 Test
 app.get("/test", (req, res) => {
     res.send("EXPRESS WORKING 💀🔥");
 });
