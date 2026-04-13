@@ -3,25 +3,25 @@ const path = require("path");
 
 const app = express();
 
-// 🔥 STATIC FILES SERVE
-app.use(express.static(path.join(__dirname)));
+// static files
+app.use(express.static(__dirname));
 
-// 🏠 HOME
+// home
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 📊 DASHBOARD
+// dashboard
 app.get("/dashboard", (req, res) => {
     res.sendFile(path.join(__dirname, "dashboard.html"));
 });
 
-// 🧪 TEST
+// test
 app.get("/test", (req, res) => {
     res.send("EXPRESS WORKING 💀🔥");
 });
 
-// 🚀 PORT (8080 SAFE PORT)
+// port change (IMPORTANT)
 app.listen(8080, () => {
     console.log("🔥 EXPRESS SERVER http://localhost:8080");
 });
