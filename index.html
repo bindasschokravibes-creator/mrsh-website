@@ -1,69 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>MRSH System</title>
-
-<style>
-body {
-    background: black;
-    color: #00ff00;
-    font-family: monospace;
-    padding: 20px;
-}
-
-#terminal {
-    white-space: pre-line;
-    font-size: 18px;
-}
-</style>
+    <title>MRSH Cyber Dashboard</title>
+    <style>
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            text-align: center;
+            margin-top: 100px;
+        }
+        h1 {
+            font-size: 40px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #00ff00;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="terminal"></div>
+<h1>💀 MRSH SYSTEM LOADED 💀</h1>
+<p>Welcome Hacker...</p>
+
+<button onclick="goDash()">Enter Dashboard</button>
 
 <script>
-
-let text = [
-"> Initializing MRSH Cyber System...",
-"> Bypassing Security...",
-"> Accessing Secure Network...",
-"> Access Granted ✔",
-"> Welcome Agent...",
-"> Loading Dashboard..."
-];
-
-let i = 0;
-let speed = 100;
-let terminal = document.getElementById("terminal");
-
-function typeLine() {
-    if (i < text.length) {
-        let line = text[i];
-        let j = 0;
-
-        let interval = setInterval(() => {
-            terminal.innerHTML += line[j];
-            j++;
-
-            if (j >= line.length) {
-                clearInterval(interval);
-                terminal.innerHTML += "\n";
-                i++;
-                setTimeout(typeLine, 500);
-            }
-        }, speed);
-
-    } else {
-        // 🔥 redirect to dashboard
-        setTimeout(() => {
-            window.location.href = "/dashboard";
-        }, 1500);
-    }
+function goDash(){
+    window.location.href = "/dashboard";
 }
-
-typeLine();
-
 </script>
 
 </body>
