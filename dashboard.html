@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<h1>💀 Cyber Dashboard 💀</h1>
-
-<input id="msg" placeholder="Ask something...">
-<button onclick="sendMsg()">Send</button>
-
-<div id="chatBox"></div>
-
 <script>
 async function sendMsg(){
     let msg = document.getElementById("msg").value;
     let box = document.getElementById("chatBox");
 
     box.innerHTML += "<div><b>You:</b> " + msg + "</div>";
-    box.innerHTML += "<div><b>AI:</b> Coming soon...</div>";
+
+    let res = await fetch("http://localhost:3000/ai", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ message: msg })
+    });
+
+    let data = await res.json();
+
+    box.innerHTML += "<div><b>AI:</b> " + data.reply + "</div>";
+
+    document.getElementById("msg").value = "";
+    box.scrollTop = box.scrollHeight;
 }
 </script>
-
-</body>
-</html>
